@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Balls</title>
+    <style>
+      #indies {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 140px;
+        font-family: comic sans;
+        text-shadow: 2px 2px 4px #000000;
+        color: #3d7c4d;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="game-canvas"></canvas>
+    <div id="indies"></div>
+    <script>
+      let canvas = document.getElementById("game-canvas");
+      let ctx = canvas.getContext("2d");
+
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const balls = [];
+
+      for (let i = 0; i < 500; i++) {
+        let ballRadius = Math.random() * 25 + 5;
+        let ballX = Math.random() * (canvas.width - ballRadius * 2) + ballRadius;
+        let ballY = Math.random() * (canvas.height - ballRadius * 2) + ballRadius;
+        let dx = Math.random() * 6 - 3;
+        let dy = Math.random() * 6 - 3;
+        let ballColor = getRandomColor();
+        
+        balls.push({
+          x: ballX,
+          y: ballY,
+          dx: dx,
+          dy: dy,
+          radius: ballRadius,
+          color: ballColor
+        });
+      }
+
+      function drawBall(ball) {
+        ctx.beginPath();
+        ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI*2);
+        ctx.fillStyle = ball.color;
+        ctx.fill();
+        ctx.closePath();
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        for (let i = 0; i < balls.length; i++) {
+          let ball = balls[i];
+
+          drawBall(ball);
+
+          if(ball.x + ball.dx > canvas.width-ball.radius || ball.x + ball.dx < ball.radius) {
+            ball.dx = -ball.dx;
+          }
+          if(ball.y + ball.dy > canvas.height-ball.radius || ball.y + ball.dy < ball.radius) {
+            ball.dy = -ball.dy;
+          }
+
+          ball.x += ball.dx;
+          ball.y += ball.dy;
+        }
+      }
+
+      function getRandomColor() {
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+          color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+      }
+
+      function changeBackgroundColor() {
+        document.body.style.backgroundColor = getRandomColor();
+        for (let i = 0; i < balls.length; i++) {
+          balls[i].color = getRandomColor();
+        }
+        let indies = document.getElementById("indies");
+        indies.style.color = getRandomColor();
+      }
+
+      changeBackgroundColor();
+      canvas.addEventListener("click", changeBackgroundColor);
+      setInterval(draw, 10);
+    </script>
+  </body>
+</html>
